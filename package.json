@@ -1,0 +1,20 @@
+{
+  "name": "@bctnry/gemtext",
+  "version": "0.0.1",
+  "description": "A parser for text/gemini files",
+  "main": "main.js",
+  "scripts": {
+    "build": "./node_modules/.bin/tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bctnry/gemtext.git"
+  },
+  "author": "Sebastian Higgins",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/bctnry/gemtext/issues"
+  },
+  "homepage": "https://github.com/bctnry/gemtext#readme"
+}
