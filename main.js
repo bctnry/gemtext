@@ -1,4 +1,7 @@
-export var HTMLGenerator = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.parse = exports.ParseResult = exports.DefaultGenerator = exports.OrgGenerator = exports.MarkdownGenerator = exports.HTMLGenerator = void 0;
+exports.HTMLGenerator = {
     preamble: function () {
         return '<html><body>\n';
     },
@@ -25,7 +28,7 @@ export var HTMLGenerator = {
         return "<blockquote>" + content + "</blockquote>\n";
     }
 };
-export var MarkdownGenerator = {
+exports.MarkdownGenerator = {
     preamble: function () {
         return '';
     },
@@ -52,7 +55,7 @@ export var MarkdownGenerator = {
         return "\n> " + content + "\n";
     }
 };
-export var OrgGenerator = {
+exports.OrgGenerator = {
     preamble: function () {
         return '';
     },
@@ -79,7 +82,7 @@ export var OrgGenerator = {
         return "\n#+BEGIN_QUOTE\n" + content + "\n#+END_QUOTE\n";
     }
 };
-export var DefaultGenerator = {
+exports.DefaultGenerator = {
     preamble: function () {
         return '';
     },
@@ -124,8 +127,8 @@ var ParseResult = /** @class */ (function () {
     };
     return ParseResult;
 }());
-export { ParseResult };
-export function parse(source, strict) {
+exports.ParseResult = ParseResult;
+function parse(source, strict) {
     if (strict === void 0) { strict = false; }
     var res = [];
     var preformatting = false;
@@ -206,3 +209,4 @@ export function parse(source, strict) {
     }
     return new ParseResult(res);
 }
+exports.parse = parse;
