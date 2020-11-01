@@ -6,7 +6,7 @@ export type Generator<T> = {
     preformatted(content: string[], alt: string): T,
     heading(level: number, text: string): T,
     unorderedList(content: string[]): T,
-    quote(content: string[]): T,
+    quote(content: string): T,
 }
 
 export const HTMLGenerator: Generator<string> = {
@@ -17,7 +17,7 @@ export const HTMLGenerator: Generator<string> = {
         return '</body></html>\n';
     },
     text: (content: string): string => {
-        return `${content}\n`;
+        return `${content}<br />`;
     },
     link: (url: string, alt: string): string => {
         return `<a href="${url}">${alt||url}</a><br />\n`;;
@@ -31,8 +31,8 @@ export const HTMLGenerator: Generator<string> = {
     unorderedList: (content: string[]): string => {
         return `<ul>${content.map((v) => `<li>${v}</li>`).join('')}</ul>\n`;
     },
-    quote: (content: string[]): string => {
-        return `<blockquote>${content.join('\n')}</blockquote>\n`;
+    quote: (content: string): string => {
+        return `<blockquote>${content}</blockquote>\n`;
     }
 }
 
@@ -47,19 +47,47 @@ export const MarkdownGenerator: Generator<string> = {
         return `${content}\n`;
     },
     link: (url: string, alt: string): string => {
+        return `\n[${alt}](${url})\n`;;
+    },
+    preformatted: (content: string[], alt: string): string => {
+        return `\n\`\`\` ${alt}\n${content.join('\n')}\n\`\`\`\n`;
+    },
+    heading: (level: number, text: string): string => {
+        return `${'#'.repeat(level)} ${text}\n`;
+    },
+    unorderedList: (content: string[]): string => {
+        return `\n${content.map((v) => `* ${v}`).join('\n')}\n`;
+    },
+    quote: (content: string): string => {
+        return `\n> ${content}\n`;
+    }
+}
+
+
+export const OrgGenerator: Generator<string> = {
+    preamble: (): string => {
+        return '';
+    },
+    postamble: (): string => {
+        return '';
+    },
+    text: (content: string): string => {
+        return `${content}\n`;
+    },
+    link: (url: string, alt: string): string => {
         return `\n\n[${alt}](${url})\n\n`;;
     },
     preformatted: (content: string[], alt: string): string => {
-        return `\n\`\`\` ${alt}\n${content.join('\n')}\`\`\``;
+        return `\n#+BEGIN_SRC ${alt||'fundamental'}\n${content.join('\n')}\n#+END_SRC\n`;
     },
     heading: (level: number, text: string): string => {
-        return `${'#'.repeat(level)} ${text}`;
+        return `${'*'.repeat(level)} ${text}`;
     },
     unorderedList: (content: string[]): string => {
         return `\n${content.map((v) => `+ ${v}`).join('\n')}\n`;
     },
-    quote: (content: string[]): string => {
-        return `\n${content.map((v) => `> ${v}`).join('\n')}\n`;
+    quote: (content: string): string => {
+        return `\n#+BEGIN_QUOTE\n${content}\n#+END_QUOTE\n`;
     }
 }
 
@@ -85,8 +113,8 @@ export const DefaultGenerator: Generator<string> = {
     unorderedList: (content: string[]): string => {
         return `${content.map((v) => `+ ${v}`).join('\n')}\n`;
     },
-    quote: (content: string[]): string => {
-        return `${content.map((v) => `> ${v}`).join('\n')}\n`;
+    quote: (content: string): string => {
+        return `> ${content}\n`;
     }
 }
 
@@ -96,7 +124,7 @@ type ParseResultData =
     | {_:3, content: string[], alt: string}
     | {_:4, level: number, text: string}
     | {_:5, content: string[]}
-    | {_:6, content: string[]}
+    | {_:6, content: string}
 ;
 
 export class ParseResult {
@@ -122,19 +150,20 @@ export function parse(source: string, strict: boolean = false): ParseResult {
     let preformattingBuffer: string[] = [];
     let listStarted: boolean = false;
     let listBuffer: string[] = [];
-    let quoteStarted: boolean = false;
-    let quoteBuffer: string[] = [];
     source.replace(/\r\n/g, '\n').split('\n').forEach((v) => {
-        if (preformatting) { preformattingBuffer.push(v); return; }
+        if (preformatting) {
+            if (v.trim() === '```') {
+                res.push({_:3, content: preformattingBuffer, alt: preformattingAlt});
+                preformatting = false;
+                preformattingBuffer = [];
+                preformattingAlt = '';
+                return;
+            } else { preformattingBuffer.push(v); return; }
+        }
         if (listStarted && !v.startsWith('* ')) {
             res.push({_:5, content: listBuffer});
             listStarted = false;
             listBuffer = [];
-        }
-        if (quoteStarted && !(((strict && v.startsWith('> '))||(!strict && v.startsWith('>'))))) {
-            res.push({_:6, content: quoteBuffer});
-            quoteStarted = false;
-            quoteBuffer = [];
         }
 
         if ((strict && v.startsWith('=> '))||(!strict && v.startsWith('=>'))) {
@@ -143,8 +172,7 @@ export function parse(source: string, strict: boolean = false): ParseResult {
             let url = x.substring(0, i); x = x.substring(i).trim();
             res.push({_:2, url, alt: x});
         } else if ((strict && v.startsWith('> '))||(!strict && v.startsWith('>'))) {
-            if (!quoteStarted) { quoteStarted = true; quoteBuffer = []; }
-            quoteBuffer.push(v.substring(1).trim());
+            res.push({_:6, content: v.substring(1).trim()});
         } else if (v.startsWith('#')) {
             let i = 0; while (v[i] == '#') { i++; }
             let level = i;
@@ -158,15 +186,8 @@ export function parse(source: string, strict: boolean = false): ParseResult {
                 res.push({_:4, level, text: v.substring(i).trim()});
             }
         } else if (v.startsWith('```')) {
-            if (preformatting) {
-                res.push({_:3, content: preformattingBuffer, alt: preformattingAlt});
-                preformatting = false;
-                preformattingBuffer = [];
-                preformattingAlt = '';
-            } else {
-                preformattingAlt = v.substring(3).trim();
-                preformatting = true;
-            }
+            preformattingAlt = v.substring(3).trim();
+            preformatting = true;
         } else if (v.startsWith('* ')) {
             if (!listStarted) { listStarted = true; listBuffer = []; }
             listBuffer.push(v.substring(2).trim());
@@ -174,11 +195,11 @@ export function parse(source: string, strict: boolean = false): ParseResult {
             res.push({_:1, val:v});
         }
     });
+    if (preformattingBuffer.length > 0) {
+        res.push({_:3, content: preformattingBuffer, alt: preformattingAlt});
+    }
     if (listBuffer.length > 0) {
         res.push({_:5, content:listBuffer});
-    }
-    if (quoteBuffer.length > 0) {
-        res.push({_:6, content:quoteBuffer});
     }
     return new ParseResult(res);
 }

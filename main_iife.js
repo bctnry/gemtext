@@ -1,4 +1,6 @@
-export var HTMLGenerator = {
+var Gemtext = (function(){
+
+var HTMLGenerator = {
     preamble: function () {
         return '<html><body>\n';
     },
@@ -6,7 +8,7 @@ export var HTMLGenerator = {
         return '</body></html>\n';
     },
     text: function (content) {
-        return content + "<br />";
+        return content + "\n";
     },
     link: function (url, alt) {
         return "<a href=\"" + url + "\">" + (alt || url) + "</a><br />\n";
@@ -22,37 +24,10 @@ export var HTMLGenerator = {
         return "<ul>" + content.map(function (v) { return "<li>" + v + "</li>"; }).join('') + "</ul>\n";
     },
     quote: function (content) {
-        return "<blockquote>" + content + "</blockquote>\n";
+        return "<blockquote>" + content.join('\n') + "</blockquote>\n";
     }
 };
-export var MarkdownGenerator = {
-    preamble: function () {
-        return '';
-    },
-    postamble: function () {
-        return '';
-    },
-    text: function (content) {
-        return content + "\n";
-    },
-    link: function (url, alt) {
-        return "\n[" + alt + "](" + url + ")\n";
-        ;
-    },
-    preformatted: function (content, alt) {
-        return "\n``` " + alt + "\n" + content.join('\n') + "\n```\n";
-    },
-    heading: function (level, text) {
-        return '#'.repeat(level) + " " + text + "\n";
-    },
-    unorderedList: function (content) {
-        return "\n" + content.map(function (v) { return "* " + v; }).join('\n') + "\n";
-    },
-    quote: function (content) {
-        return "\n> " + content + "\n";
-    }
-};
-export var OrgGenerator = {
+var MarkdownGenerator = {
     preamble: function () {
         return '';
     },
@@ -67,7 +42,34 @@ export var OrgGenerator = {
         ;
     },
     preformatted: function (content, alt) {
-        return "\n#+BEGIN_SRC " + (alt || 'fundamental') + "\n" + content.join('\n') + "\n#+END_SRC\n";
+        return "\n``` " + alt + "\n" + content.join('\n') + "```";
+    },
+    heading: function (level, text) {
+        return '#'.repeat(level) + " " + text;
+    },
+    unorderedList: function (content) {
+        return "\n" + content.map(function (v) { return "+ " + v; }).join('\n') + "\n";
+    },
+    quote: function (content) {
+        return "\n" + content.map(function (v) { return "> " + v; }).join('\n') + "\n";
+    }
+};
+var OrgGenerator = {
+    preamble: function () {
+        return '';
+    },
+    postamble: function () {
+        return '';
+    },
+    text: function (content) {
+        return content + "\n";
+    },
+    link: function (url, alt) {
+        return "\n\n[" + alt + "](" + url + ")\n\n";
+        ;
+    },
+    preformatted: function (content, alt) {
+        return "\n``` " + alt + "\n" + content.join('\n') + "```";
     },
     heading: function (level, text) {
         return '*'.repeat(level) + " " + text;
@@ -76,10 +78,10 @@ export var OrgGenerator = {
         return "\n" + content.map(function (v) { return "+ " + v; }).join('\n') + "\n";
     },
     quote: function (content) {
-        return "\n#+BEGIN_QUOTE\n" + content + "\n#+END_QUOTE\n";
+        return "\n" + content.map(function (v) { return "> " + v; }).join('\n') + "\n";
     }
 };
-export var DefaultGenerator = {
+var DefaultGenerator = {
     preamble: function () {
         return '';
     },
@@ -103,7 +105,7 @@ export var DefaultGenerator = {
         return content.map(function (v) { return "+ " + v; }).join('\n') + "\n";
     },
     quote: function (content) {
-        return "> " + content + "\n";
+        return content.map(function (v) { return "> " + v; }).join('\n') + "\n";
     }
 };
 var ParseResult = /** @class */ (function () {
@@ -124,8 +126,8 @@ var ParseResult = /** @class */ (function () {
     };
     return ParseResult;
 }());
-export { ParseResult };
-export function parse(source, strict) {
+
+function parse(source, strict) {
     if (strict === void 0) { strict = false; }
     var res = [];
     var preformatting = false;
@@ -133,6 +135,8 @@ export function parse(source, strict) {
     var preformattingBuffer = [];
     var listStarted = false;
     var listBuffer = [];
+    var quoteStarted = false;
+    var quoteBuffer = [];
     source.replace(/\r\n/g, '\n').split('\n').forEach(function (v) {
         if (preformatting) {
             if (v.trim() === '```') {
@@ -152,6 +156,11 @@ export function parse(source, strict) {
             listStarted = false;
             listBuffer = [];
         }
+        if (quoteStarted && !(((strict && v.startsWith('> ')) || (!strict && v.startsWith('>'))))) {
+            res.push({ _: 6, content: quoteBuffer });
+            quoteStarted = false;
+            quoteBuffer = [];
+        }
         if ((strict && v.startsWith('=> ')) || (!strict && v.startsWith('=>'))) {
             var x = v.substring(2).trim();
             var i = 0;
@@ -163,7 +172,11 @@ export function parse(source, strict) {
             res.push({ _: 2, url: url, alt: x });
         }
         else if ((strict && v.startsWith('> ')) || (!strict && v.startsWith('>'))) {
-            res.push({ _: 6, content: v.substring(1).trim() });
+            if (!quoteStarted) {
+                quoteStarted = true;
+                quoteBuffer = [];
+            }
+            quoteBuffer.push(v.substring(1).trim());
         }
         else if (v.startsWith('#')) {
             var i = 0;
@@ -204,5 +217,18 @@ export function parse(source, strict) {
     if (listBuffer.length > 0) {
         res.push({ _: 5, content: listBuffer });
     }
+    if (quoteBuffer.length > 0) {
+        res.push({ _: 6, content: quoteBuffer });
+    }
     return new ParseResult(res);
 }
+
+return {
+    HTMLGenerator: HTMLGenerator,
+    MarkdownGenerator: MarkdownGenerator,
+    OrgGenerator: OrgGenerator,
+    DefaultGenerator: DefaultGenerator,
+    ParseResult: ParseResult,
+    parse: parse
+}
+})();

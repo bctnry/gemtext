@@ -6,10 +6,11 @@ export declare type Generator<T> = {
     preformatted(content: string[], alt: string): T;
     heading(level: number, text: string): T;
     unorderedList(content: string[]): T;
-    quote(content: string[]): T;
+    quote(content: string): T;
 };
 export declare const HTMLGenerator: Generator<string>;
 export declare const MarkdownGenerator: Generator<string>;
+export declare const OrgGenerator: Generator<string>;
 export declare const DefaultGenerator: Generator<string>;
 declare type ParseResultData = {
     _: 1;
@@ -31,7 +32,7 @@ declare type ParseResultData = {
     content: string[];
 } | {
     _: 6;
-    content: string[];
+    content: string;
 };
 export declare class ParseResult {
     data: ParseResultData[];

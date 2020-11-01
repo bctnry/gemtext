@@ -5,64 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-    <h1>@bctnry/gemtext demo</h1>
-    <div style="vertical-align: top">
-    <textarea id="input" style="display:inline-block;width:40%;height:100%"># Project Gemini
+<body style="margin:0">
+    <div style="position:fixed;height:100%;width:100%;display:flex">
+    <textarea id="input" style="flex:1;height:100%;width:100%">
+```
+@bctnry/gemtext demo
+edit the content in this textarea to trigger the parser
+```
 
-        ## Overview
-        
-        Gemini is a new internet protocol which:
-        
-        * Is heavier than gopher
-        * Is lighter than the web
-        * Will not replace either
-        * Strives for maximum power to weight ratio
-        * Takes user privacy very seriously
-        
-        ## Resources
-        
-        => docs/	Gemini documentation
-        => software/	Gemini software
-        => servers/	Known Gemini servers
-        => https://lists.orbitalfox.eu/listinfo/gemini	Gemini mailing list
-        => gemini://gemini.conman.org/test/torture/	Gemini client torture test
-        
-        ## Web proxies
-        
-        => https://portal.mozz.us/?url=gemini%3A%2F%2Fgemini.circumlunar.space%2F&fmt=fixed	Gemini-to-web proxy service
-        => https://proxy.vulpes.one/gemini/gemini.circumlunar.space	Another Gemini-to-web proxy service
-        
-        ## Search engines
-        
-        => gemini://gus.guru/	Gemini Universal Search engine
-        => gemini://houston.coder.town	Houston search engine
-        
-        ## Geminispace aggregators
-        
-        => capcom/	CAPCOM
-        => gemini://rawtext.club:1965/~sloum/spacewalk.gmi	Spacewalk
-        
-        ## Gemini mirrors of web resources
-        
-        => gemini://gempaper.strangled.net/mirrorlist/	A list of mirrored services
-        
-        ## Free Gemini hosting
-        
-        => users/	Users with Gemini content on this server
+# Project Gemini
+## Overview
+
+Gemini is a new internet protocol which:
+
+* Is heavier than gopher
+* Is lighter than the web
+* Will not replace either
+* Strives for maximum power to weight ratio
+* Takes user privacy very seriously
+
+## Resources
+
+=> docs/	Gemini documentation
+=> software/	Gemini software
+=> servers/	Known Gemini servers
+=> https://lists.orbitalfox.eu/listinfo/gemini	Gemini mailing list
+=> gemini://gemini.conman.org/test/torture/	Gemini client torture test
+
+## Web proxies
+
+=> https://portal.mozz.us/?url=gemini%3A%2F%2Fgemini.circumlunar.space%2F&fmt=fixed	Gemini-to-web proxy service
+=> https://proxy.vulpes.one/gemini/gemini.circumlunar.space	Another Gemini-to-web proxy service
+
+## Search engines
+
+=> gemini://gus.guru/	Gemini Universal Search engine
+=> gemini://houston.coder.town	Houston search engine
+
+## Geminispace aggregators
+
+=> capcom/	CAPCOM
+=> gemini://rawtext.club:1965/~sloum/spacewalk.gmi	Spacewalk
+
+## Gemini mirrors of web resources
+
+=> gemini://gempaper.strangled.net/mirrorlist/	A list of mirrored services
+
+## Free Gemini hosting
+
+=> users/	Users with Gemini content on this server
         </textarea>
-    <div id="output" style="display:inline-block;width:40%"></div>
+    <div id="output" style="overflow:auto;flex:1"></div>
+    <textarea id="markdown" style="flex:1"></textarea>
 </div>
-    <script type="module" src="../main.js"></script>
-    <script type="module">
-        import * as Gemtext from "../main.js";
+    <script src="../main_iife.js"></script>
+    <script>
         
         
         let _INPUT = document.getElementById('input');
         let _OUTPUT = document.getElementById('output');
+        let _MARKDOWN = document.getElementById('markdown');
 
         _INPUT.addEventListener('input', (e) => {
-            _OUTPUT.innerHTML = Gemtext.parse(_INPUT.value).generate(Gemtext.HTMLGenerator);
+            let pr = Gemtext.parse(_INPUT.value);
+            _OUTPUT.innerHTML = pr.generate(Gemtext.HTMLGenerator);
+            _MARKDOWN.value = pr.generate(Gemtext.MarkdownGenerator);
         })
     </script>
 </body>
