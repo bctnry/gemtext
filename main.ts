@@ -9,6 +9,10 @@ export type Generator<T> = {
     quote(content: string): T,
 }
 
+function _htmlEscape(str: string) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export const HTMLGenerator: Generator<string> = {
     preamble: (): string => {
         return '<html><body>\n';
@@ -17,22 +21,22 @@ export const HTMLGenerator: Generator<string> = {
         return '</body></html>\n';
     },
     text: (content: string): string => {
-        return `${content}<br />`;
+        return `${_htmlEscape(content)}<br />`;
     },
     link: (url: string, alt: string): string => {
         return `<a href="${url}">${alt||url}</a><br />\n`;;
     },
     preformatted: (content: string[], alt: string): string => {
-        return `<pre alt="${alt}">${content.join('\n')}</pre>\n`;
+        return `<pre alt="${alt}">${_htmlEscape(content.join('\n'))}</pre>\n`;
     },
     heading: (level: number, text: string): string => {
-        return `<h${level}>${text}</h${level}>\n`;
+        return `<h${level}>${_htmlEscape(text)}</h${level}>\n`;
     },
     unorderedList: (content: string[]): string => {
-        return `<ul>${content.map((v) => `<li>${v}</li>`).join('')}</ul>\n`;
+        return `<ul>${content.map((v) => `<li>${_htmlEscape(v)}</li>`).join('')}</ul>\n`;
     },
     quote: (content: string): string => {
-        return `<blockquote>${content}</blockquote>\n`;
+        return `<blockquote>${_htmlEscape(content)}</blockquote>\n`;
     }
 }
 

@@ -1,6 +1,6 @@
 {
-  "name": "@bctnry/gemtext",
-  "version": "0.0.1",
+  "name": "gemtext",
+  "version": "0.0.3",
   "description": "A parser for text/gemini files",
   "main": "main.js",
   "scripts": {
@@ -16,5 +16,6 @@
   "bugs": {
     "url": "https://github.com/bctnry/gemtext/issues"
   },
+  "keywords": ["gemini", "parse"],
   "homepage": "https://github.com/bctnry/gemtext#readme"
 }

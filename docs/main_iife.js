@@ -1,5 +1,8 @@
 var Gemtext = (function(){
 
+function _htmlEscape(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 var HTMLGenerator = {
     preamble: function () {
         return '<html><body>\n';
@@ -8,23 +11,23 @@ var HTMLGenerator = {
         return '</body></html>\n';
     },
     text: function (content) {
-        return content + "\n";
+        return _htmlEscape(content) + "<br />";
     },
     link: function (url, alt) {
         return "<a href=\"" + url + "\">" + (alt || url) + "</a><br />\n";
         ;
     },
     preformatted: function (content, alt) {
-        return "<pre alt=\"" + alt + "\">" + content.join('\n') + "</pre>\n";
+        return "<pre alt=\"" + alt + "\">" + _htmlEscape(content.join('\n')) + "</pre>\n";
     },
     heading: function (level, text) {
-        return "<h" + level + ">" + text + "</h" + level + ">\n";
+        return "<h" + level + ">" + _htmlEscape(text) + "</h" + level + ">\n";
     },
     unorderedList: function (content) {
-        return "<ul>" + content.map(function (v) { return "<li>" + v + "</li>"; }).join('') + "</ul>\n";
+        return "<ul>" + content.map(function (v) { return "<li>" + _htmlEscape(v) + "</li>"; }).join('') + "</ul>\n";
     },
     quote: function (content) {
-        return "<blockquote>" + content.join('\n') + "</blockquote>\n";
+        return "<blockquote>" + _htmlEscape(content) + "</blockquote>\n";
     }
 };
 var MarkdownGenerator = {
