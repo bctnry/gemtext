@@ -9,7 +9,7 @@ A parser for text/gemini files.
 Basic usage:
 
 ``` typescript
-import * as Gemtext from '@bctnry/gemtext';
+import * as Gemtext from 'gemtext';
 
 Gemtext.parse(yourSourceStringHere).generate(Gemtext.HTMLGenerator);
 ```
@@ -20,7 +20,7 @@ Gemtext.parse(yourSourceStringHere).generate(Gemtext.HTMLGenerator);
 + `ParseResult`.`generate`
   - `generate`<**T**>(generator: **Generator**<**T**>): **T**
 + Generators
-  - `Generator`: The base class of all built-in generators. Output the parsed result as-is. Normally used to 
+  - `Generator<T>`: The base type of all generators.
   - `HTMLGenerator`: **Generator**<**string**> - Generator that generates HTML string.
   - `MarkdownGenerator`: **Generator**<**string**> - Generator that generates Markdown string.
   - `OrgGenerator`: **Generator**<**string**> - Generator that generates org-mode string.
@@ -63,4 +63,3 @@ You'll need typescript.
 ```
 npm run build
 ```
-
