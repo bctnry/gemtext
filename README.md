@@ -14,6 +14,14 @@ import * as Gemtext from 'gemtext';
 Gemtext.parse(yourSourceStringHere).generate(Gemtext.HTMLGenerator);
 ```
 
+With built-in CLI tool:
+
+``` bash
+gemtext [-s|--strict] [html|md|org] [input file name] [output file name]
+```
+
+`[-s|--strict]` and `[output file name]` can be omitted.
+
 ### API
 
 + `parse`(source: **string**, strict: **boolean** = `false`): `ParseResult`
