@@ -15,10 +15,10 @@ function _htmlEscape(str: string) {
 
 export const HTMLGenerator: Generator<string> = {
     preamble: (): string => {
-        return '<html><body>\n';
+        return '';
     },
     postamble: (): string => {
-        return '</body></html>\n';
+        return '';
     },
     text: (content: string): string => {
         return `${_htmlEscape(content)}<br />`;

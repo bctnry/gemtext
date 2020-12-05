@@ -6,10 +6,10 @@ function _htmlEscape(str) {
 }
 exports.HTMLGenerator = {
     preamble: function () {
-        return '<html><body>\n';
+        return '';
     },
     postamble: function () {
-        return '</body></html>\n';
+        return '';
     },
     text: function (content) {
         return _htmlEscape(content) + "<br />";
