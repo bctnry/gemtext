@@ -11,7 +11,7 @@ Basic usage:
 ``` typescript
 import * as Gemtext from 'gemtext';
 
-Gemtext.parse(yourSourceStringHere).generate(Gemtext.HTMLGenerator);
+Gemtext.parse(yourSourceStringHere).generate(Gemtext.HTMLRenderer);
 ```
 
 With built-in CLI tool:
@@ -26,12 +26,12 @@ gemtext [-s|--strict] [html|md|org] [input file name] [output file name]
 
 + `parse`(source: **string**, strict: **boolean** = `false`): `ParseResult`
 + `ParseResult`.`generate`
-  - `generate`<**T**>(generator: **Generator**<**T**>): **T**
-+ Generators
-  - `Generator<T>`: The base type of all generators.
-  - `HTMLGenerator`: **Generator**<**string**> - Generator that generates HTML string.
-  - `MarkdownGenerator`: **Generator**<**string**> - Generator that generates Markdown string.
-  - `OrgGenerator`: **Generator**<**string**> - Generator that generates org-mode string.
+  - `generate`<**T**>(Renderer: **Renderer**<**T**>): **T**
++ Renderers
+  - `Renderer<T>`: The base type of all Renderers.
+  - `HTMLRenderer`: **Renderer**<**string**> - Renderer that generates HTML string.
+  - `MarkdownRenderer`: **Renderer**<**string**> - Renderer that generates Markdown string.
+  - `OrgRenderer`: **Renderer**<**string**> - Renderer that generates org-mode string.
 
 ### "Strict" gemtext
 
@@ -45,9 +45,9 @@ Things that are optional in the official spec but aren't in this subset:
 
 Strict mode parsing does not raise exceptions; when a text line does not meet the strict requirements, it will be simply regarded as a normal (unformatted) text line.
 
-### Custom generator
+### Custom Renderer
 
-To write your own custom generator, create a new object that contains the following methods:
+To write your own custom Renderer, create a new object that contains the following methods:
 
 + `preamble`() - Preamble. e.g. HTML header stuff before main content.
 + `postamble`() - Postamble. e.g. HTML footer stuff before main content (e.g. closing `<html>` tags and stuff).
@@ -59,7 +59,7 @@ To write your own custom generator, create a new object that contains the follow
 + `quote`(content: **string**[])
 
 ``` typescript
-const MyCustomGenerator: Gemtext.Generator<string> = {
+const MyCustomRenderer: Gemtext.Renderer<string> = {
     // ...implement all the methods here.
 }
 ```

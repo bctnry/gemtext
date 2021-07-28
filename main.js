@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parse = exports.ParseResult = exports.DefaultGenerator = exports.OrgGenerator = exports.MarkdownGenerator = exports.HTMLGenerator = void 0;
+exports.parse = exports.ParseResult = exports.DefaultRenderer = exports.OrgRenderer = exports.MarkdownRenderer = exports.HTMLRenderer = void 0;
 function _htmlEscape(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-exports.HTMLGenerator = {
+exports.HTMLRenderer = {
     preamble: function () {
         return '';
     },
@@ -31,7 +31,7 @@ exports.HTMLGenerator = {
         return "<blockquote>" + _htmlEscape(content) + "</blockquote>\n";
     }
 };
-exports.MarkdownGenerator = {
+exports.MarkdownRenderer = {
     preamble: function () {
         return '';
     },
@@ -58,7 +58,7 @@ exports.MarkdownGenerator = {
         return "\n> " + content + "\n";
     }
 };
-exports.OrgGenerator = {
+exports.OrgRenderer = {
     preamble: function () {
         return '';
     },
@@ -85,7 +85,7 @@ exports.OrgGenerator = {
         return "\n#+BEGIN_QUOTE\n" + content + "\n#+END_QUOTE\n";
     }
 };
-exports.DefaultGenerator = {
+exports.DefaultRenderer = {
     preamble: function () {
         return '';
     },

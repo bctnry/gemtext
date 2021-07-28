@@ -1,4 +1,4 @@
-export type Generator<T> = {
+export type Renderer<T> = {
     preamble(): T,
     postamble(): T,
     text(content: string): T,
@@ -13,7 +13,7 @@ function _htmlEscape(str: string) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-export const HTMLGenerator: Generator<string> = {
+export const HTMLRenderer: Renderer<string> = {
     preamble: (): string => {
         return '';
     },
@@ -40,7 +40,7 @@ export const HTMLGenerator: Generator<string> = {
     }
 }
 
-export const MarkdownGenerator: Generator<string> = {
+export const MarkdownRenderer: Renderer<string> = {
     preamble: (): string => {
         return '';
     },
@@ -68,7 +68,7 @@ export const MarkdownGenerator: Generator<string> = {
 }
 
 
-export const OrgGenerator: Generator<string> = {
+export const OrgRenderer: Renderer<string> = {
     preamble: (): string => {
         return '';
     },
@@ -95,7 +95,7 @@ export const OrgGenerator: Generator<string> = {
     }
 }
 
-export const DefaultGenerator: Generator<string> = {
+export const DefaultRenderer: Renderer<string> = {
     preamble: (): string => {
         return '';
     },
@@ -133,7 +133,7 @@ type ParseResultData =
 
 export class ParseResult {
     constructor(public data: ParseResultData[]) {}
-    generate<T>(generator: Generator<T>) {
+    generate<T>(generator: Renderer<T>) {
         return this.data.map((v) => {
             switch (v._) {
                 case 1: return generator.text(v.val);

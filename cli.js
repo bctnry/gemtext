@@ -49,10 +49,10 @@ if (process.argv[i]) { outputFile = process.argv[i]; }
 
 let source = fs.readFileSync(file, {encoding: 'utf-8'});
 let result = Gemtext.parse(source).generate(
-    target === 'html'? Gemtext.HTMLGenerator
-    : target === 'md'? Gemtext.MarkdownGenerator
-    : target === 'org'? Gemtext.OrgGenerator
-    : Gemtext.HTMLGenerator
+    target === 'html'? Gemtext.HTMLRenderer
+    : target === 'md'? Gemtext.MarkdownRenderer
+    : target === 'org'? Gemtext.OrgRenderer
+    : Gemtext.HTMLRenderer
 );
 fs.writeFileSync(outputFile, result);
 

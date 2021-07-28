@@ -1,4 +1,4 @@
-export declare type Generator<T> = {
+export declare type Renderer<T> = {
     preamble(): T;
     postamble(): T;
     text(content: string): T;
@@ -8,10 +8,10 @@ export declare type Generator<T> = {
     unorderedList(content: string[]): T;
     quote(content: string): T;
 };
-export declare const HTMLGenerator: Generator<string>;
-export declare const MarkdownGenerator: Generator<string>;
-export declare const OrgGenerator: Generator<string>;
-export declare const DefaultGenerator: Generator<string>;
+export declare const HTMLRenderer: Renderer<string>;
+export declare const MarkdownRenderer: Renderer<string>;
+export declare const OrgRenderer: Renderer<string>;
+export declare const DefaultRenderer: Renderer<string>;
 declare type ParseResultData = {
     _: 1;
     val: string;
@@ -37,7 +37,7 @@ declare type ParseResultData = {
 export declare class ParseResult {
     data: ParseResultData[];
     constructor(data: ParseResultData[]);
-    generate<T>(generator: Generator<T>): string;
+    generate<T>(generator: Renderer<T>): string;
 }
 export declare function parse(source: string, strict?: boolean): ParseResult;
 export {};
